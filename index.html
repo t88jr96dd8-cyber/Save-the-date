@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -57,7 +57,6 @@
       margin-bottom: 8px;
     }
 
-    select,
     input {
       width: 100%;
       padding: 13px;
@@ -109,28 +108,28 @@
 
   <div class="card">
     <label>📍 Location</label>
-
-    <select id="location">
-      <option>Heilbronn</option>
-      <option>Stuttgart</option>
-      <option>Karlsruhe</option>
-    </select>
+    <input
+      id="location"
+      type="text"
+      placeholder="e.g. Heilbronn"
+    >
   </div>
 
   <div class="card">
     <label>🏛️ Service</label>
-
-    <select id="service">
-      <option>Bürgeramt</option>
-      <option>Passport / ID</option>
-      <option>Driving Licence</option>
-    </select>
+    <input
+      id="service"
+      type="text"
+      placeholder="e.g. Bürgeramt"
+    >
   </div>
 
   <div class="card">
-    <label>📅 Preferred date</label>
-
-    <input id="date" type="date">
+    <label>📅 Date and Time</label>
+    <input
+      id="dateTime"
+      type="datetime-local"
+    >
   </div>
 
   <button onclick="startMonitoring()">
@@ -160,7 +159,7 @@ function startMonitoring() {
 
     service: document.getElementById("service").value,
 
-    date: document.getElementById("date").value
+    dateTime: document.getElementById("dateTime").value
   };
 
   console.log(data);
