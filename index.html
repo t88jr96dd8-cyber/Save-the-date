@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <title>Save the Date</title>
 
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
@@ -14,172 +15,314 @@
 
     body {
       margin: 0;
-      padding: 25px 20px;
+      padding: 20px;
       font-family: Arial, sans-serif;
-      background: #fffaf2;
+      background: linear-gradient(135deg, #fff0f7, #fff9d9, #e9ffff);
       color: #222;
     }
 
-    .app {
+    .container {
       max-width: 500px;
-      margin: auto;
+      margin: 0 auto;
     }
 
     .logo {
-      font-size: 42px;
+      text-align: center;
+      margin: 15px 0 5px;
+      font-size: 38px;
       font-weight: 900;
-      line-height: 0.9;
-      margin-bottom: 12px;
-      transform: rotate(-2deg);
+      line-height: 1;
     }
 
-    .pink { color: #ff4f9a; }
-    .yellow { color: #f5c542; font-size: 24px; }
-    .blue { color: #20b7b0; }
+    .logo .save {
+      color: #ff4fa3;
+    }
+
+    .logo .the {
+      color: #ffd43b;
+      font-size: 25px;
+    }
+
+    .logo .date {
+      color: #20c9c9;
+    }
 
     .subtitle {
+      text-align: center;
+      color: #666;
       margin-bottom: 25px;
-      color: #555;
+      font-size: 15px;
     }
 
     .card {
       background: white;
-      border: 3px solid #222;
       border-radius: 20px;
       padding: 18px;
       margin-bottom: 15px;
-      box-shadow: 5px 5px 0 #222;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.08);
     }
 
     label {
       display: block;
       font-weight: bold;
-      margin-bottom: 8px;
+      margin-bottom: 10px;
+      font-size: 16px;
     }
 
     input {
       width: 100%;
-      padding: 13px;
-      border: 2px solid #222;
+      padding: 14px;
+      border: 2px solid #eee;
       border-radius: 12px;
       font-size: 16px;
+      outline: none;
+      background: #fafafa;
+    }
+
+    input:focus {
+      border-color: #20c9c9;
       background: white;
     }
 
-    button {
-      width: 100%;
-      padding: 16px;
-      border: 3px solid #222;
-      border-radius: 18px;
-      background: #ff4f9a;
-      color: white;
-      font-size: 18px;
-      font-weight: bold;
-      box-shadow: 5px 5px 0 #222;
-    }
-
-    button:active {
-      transform: translate(3px, 3px);
-      box-shadow: 2px 2px 0 #222;
-    }
-
-    .note {
-      text-align: center;
+    .optional {
+      font-weight: normal;
       color: #777;
       font-size: 13px;
-      margin-top: 18px;
+    }
+
+    .hint {
+      font-size: 13px;
+      color: #777;
+      margin-top: 10px;
+    }
+
+    .button {
+      width: 100%;
+      border: none;
+      border-radius: 16px;
+      padding: 17px;
+      font-size: 18px;
+      font-weight: bold;
+      color: white;
+      background: linear-gradient(90deg, #ff4fa3, #8b5cf6, #20c9c9);
+      cursor: pointer;
+      box-shadow: 0 6px 15px rgba(139,92,246,0.25);
+    }
+
+    .button:active {
+      transform: scale(0.98);
+    }
+
+    .popup {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.45);
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .popup-content {
+      background: white;
+      border-radius: 22px;
+      padding: 25px;
+      text-align: center;
+      max-width: 350px;
+      width: 100%;
+    }
+
+    .popup-content h2 {
+      margin-top: 0;
+      color: #ff4fa3;
+    }
+
+    .close-button {
+      margin-top: 15px;
+      border: none;
+      background: #20c9c9;
+      color: white;
+      padding: 12px 25px;
+      border-radius: 12px;
+      font-weight: bold;
+      cursor: pointer;
     }
   </style>
 </head>
 
 <body>
 
-<div class="app">
+  <div class="container">
 
-  <div class="logo">
-    <span class="pink">SAVE</span><br>
-    <span class="yellow">the</span>
-    <span class="blue">DATE</span>
+    <div class="logo">
+      <span class="save">SAVE</span>
+      <span class="the">the</span>
+      <span class="date">DATE</span>
+    </div>
+
+    <div class="subtitle">
+      Never miss a perfect appointment again ✨
+    </div>
+
+    <!-- LOCATION -->
+    <div class="card">
+      <label>📍 Location</label>
+
+      <input
+        id="location"
+        type="text"
+        placeholder="e.g. Heilbronn"
+      >
+    </div>
+
+    <!-- SERVICE -->
+    <div class="card">
+      <label>📝 Service</label>
+
+      <input
+        id="service"
+        type="text"
+        placeholder="e.g. Bürgeramt"
+      >
+    </div>
+
+    <!-- DATE RANGE -->
+    <div class="card">
+      <label>📅 Date range</label>
+
+      <input
+        id="dateFrom"
+        type="date"
+      >
+
+      <br><br>
+
+      <input
+        id="dateTo"
+        type="date"
+      >
+    </div>
+
+    <!-- TIME RANGE -->
+    <div class="card">
+      <label>
+        🕐 Time range
+        <span class="optional">(optional)</span>
+      </label>
+
+      <input
+        id="timeFrom"
+        type="time"
+      >
+
+      <br><br>
+
+      <input
+        id="timeTo"
+        type="time"
+      >
+
+      <div class="hint">
+        Leave empty if any time is okay.
+      </div>
+    </div>
+
+    <!-- BUTTON -->
+    <button class="button" onclick="startMonitoring()">
+      🔔 Notify me
+    </button>
+
   </div>
 
-  <div class="subtitle">
-    Never miss a perfect appointment again ✨
+
+  <!-- POPUP -->
+  <div class="popup" id="popup">
+
+    <div class="popup-content">
+
+      <h2>You're all set! 🎉</h2>
+
+      <p>
+        We'll notify you when an appointment matching your preferences becomes available.
+      </p>
+
+      <button class="close-button" onclick="closePopup()">
+        Done
+      </button>
+
+    </div>
+
   </div>
 
-  <div class="card">
-    <label>📍 Location</label>
-    <input
-      id="location"
-      type="text"
-      placeholder="e.g. Heilbronn"
-    >
-  </div>
 
-  <div class="card">
-    <label>🏛️ Service</label>
-    <input
-      id="service"
-      type="text"
-      placeholder="e.g. Bürgeramt"
-    >
-  </div>
+  <script>
 
-  <div class="card">
-    <label>📅 Date and Time</label>
-    <input
-      id="dateTime"
-      type="datetime-local"
-    >
-  </div>
+    const tg = window.Telegram.WebApp;
 
-  <button onclick="startMonitoring()">
-    🔔 Notify me
-  </button>
+    tg.ready();
+    tg.expand();
 
-  <div class="note">
-    We'll notify you as soon as a matching appointment becomes available.
-  </div>
 
-</div>
+    function startMonitoring() {
 
-<script>
+      const location =
+        document.getElementById("location").value;
 
-const tg = window.Telegram.WebApp;
+      const service =
+        document.getElementById("service").value;
 
-tg.ready();
-tg.expand();
+      const dateFrom =
+        document.getElementById("dateFrom").value;
 
-function startMonitoring() {
+      const dateTo =
+        document.getElementById("dateTo").value;
 
-  const data = {
-    telegramUserId: tg.initDataUnsafe?.user?.id,
-    initData: tg.initData,
+      const timeFrom =
+        document.getElementById("timeFrom").value || null;
 
-    location: document.getElementById("location").value,
+      const timeTo =
+        document.getElementById("timeTo").value || null;
 
-    service: document.getElementById("service").value,
 
-    dateTime: document.getElementById("dateTime").value
-  };
+      const telegramUserId =
+        tg.initDataUnsafe?.user?.id || null;
 
-  console.log(data);
 
-  tg.showPopup({
-    title: "You're all set! 🎉",
+      const data = {
 
-    message:
-      "We'll notify you when a matching appointment becomes available.",
+        telegramUserId: telegramUserId,
 
-    buttons: [
-      {
-        type: "ok"
-      }
-    ]
-  });
+        initData: tg.initData,
 
-}
+        location: location,
 
-</script>
+        service: service,
+
+        dateFrom: dateFrom,
+
+        dateTo: dateTo,
+
+        timeFrom: timeFrom,
+
+        timeTo: timeTo
+
+      };
+
+
+      console.log("Monitoring request:", data);
+
+
+      document.getElementById("popup").style.display = "flex";
+    }
+
+
+    function closePopup() {
+
+      document.getElementById("popup").style.display = "none";
+
+    }
+
+  </script>
 
 </body>
 </html>
