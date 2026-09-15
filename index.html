@@ -1,69 +1,416 @@
-async function startMonitoring() {
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 
-  const location =
-    document.getElementById("location").value;
+  <title>Save the Date</title>
 
-  const service =
-    document.getElementById("service").value;
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
-  const dateFrom =
-    document.getElementById("dateFrom").value;
-
-  const dateTo =
-    document.getElementById("dateTo").value;
-
-  const timeFrom =
-    document.getElementById("timeFrom").value || null;
-
-  const timeTo =
-    document.getElementById("timeTo").value || null;
-
-  const telegramUserId =
-    tg.initDataUnsafe?.user?.id || null;
-
-  const data = {
-    telegramChatId: telegramUserId,
-    telegramUserId: telegramUserId,
-    initData: tg.initData,
-    location: location,
-    service: service,
-    dateFrom: dateFrom,
-    dateTo: dateTo,
-    timeFrom: timeFrom,
-    timeTo: timeTo
-  };
-
-  console.log("Monitoring request:", data);
-
-  try {
-
-    const response = await fetch(
-      "https://save-the-date-production.up.railway.app/api/watch",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(data)
-      }
-    );
-
-    const result = await response.json();
-
-    console.log("Backend response:", result);
-
-    if (result.success) {
-      document.getElementById("popup").style.display = "flex";
-    } else {
-      alert("Fehler: " + (result.error || "Unbekannter Fehler"));
+  <style>
+    * {
+      box-sizing: border-box;
     }
 
-  } catch (error) {
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #f5f5f7;
+      color: #111;
+    }
 
-    console.error(error);
+    .container {
+      max-width: 520px;
+      margin: 0 auto;
+      padding: 32px 20px 50px;
+    }
 
-    alert(
-      "Verbindung zum Server fehlgeschlagen."
-    );
+    .card {
+      background: white;
+      border-radius: 24px;
+      padding: 26px 22px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+    }
+
+    .logo {
+      text-align: center;
+      font-size: 42px;
+      margin-bottom: 8px;
+    }
+
+    h1 {
+      text-align: center;
+      margin: 0;
+      font-size: 30px;
+      font-weight: 800;
+      letter-spacing: -0.8px;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #777;
+      margin-top: 8px;
+      margin-bottom: 30px;
+      font-size: 15px;
+    }
+
+    label {
+      display: block;
+      margin-top: 18px;
+      margin-bottom: 7px;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    input {
+      width: 100%;
+      height: 52px;
+      border: 1px solid #ddd;
+      border-radius: 14px;
+      padding: 0 15px;
+      font-size: 16px;
+      background: #fafafa;
+      color: #111;
+      outline: none;
+    }
+
+    input:focus {
+      border-color: #111;
+      background: white;
+    }
+
+    .row {
+      display: flex;
+      gap: 12px;
+    }
+
+    .row > div {
+      flex: 1;
+    }
+
+    button {
+      width: 100%;
+      height: 56px;
+      margin-top: 28px;
+      border: none;
+      border-radius: 16px;
+      background: #111;
+      color: white;
+      font-size: 17px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    button:active {
+      transform: scale(0.98);
+    }
+
+    #popup {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.55);
+      align-items: center;
+      justify-content: center;
+      padding: 25px;
+      z-index: 1000;
+    }
+
+    .popup-card {
+      background: white;
+      width: 100%;
+      max-width: 360px;
+      border-radius: 24px;
+      padding: 30px 24px;
+      text-align: center;
+    }
+
+    .popup-icon {
+      font-size: 48px;
+      margin-bottom: 12px;
+    }
+
+    .popup-card h2 {
+      margin: 0 0 10px;
+    }
+
+    .popup-card p {
+      color: #666;
+      line-height: 1.5;
+    }
+
+    .popup-card button {
+      margin-top: 15px;
+    }
+
+    #status {
+      text-align: center;
+      font-size: 14px;
+      margin-top: 14px;
+      color: #777;
+      min-height: 20px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+
+    <div class="card">
+
+      <div class="logo">📅</div>
+
+      <h1>SAVE THE DATE</h1>
+
+      <div class="subtitle">
+        Never miss an appointment.
+      </div>
+
+      <label for="location">Location</label>
+      <input
+        id="location"
+        type="text"
+        placeholder="z. B. Heilbronn"
+      >
+
+      <label for="service">Service</label>
+      <input
+        id="service"
+        type="text"
+        placeholder="z. B. Aufenthaltserlaubnis"
+      >
+
+      <div class="row">
+
+        <div>
+          <label for="dateFrom">Date from</label>
+          <input id="dateFrom" type="date">
+        </div>
+
+        <div>
+          <label for="dateTo">Date to</label>
+          <input id="dateTo" type="date">
+        </div>
+
+      </div>
+
+      <div class="row">
+
+        <div>
+          <label for="timeFrom">Time from</label>
+          <input id="timeFrom" type="time">
+        </div>
+
+        <div>
+          <label for="timeTo">Time to</label>
+          <input id="timeTo" type="time">
+        </div>
+
+      </div>
+
+      <button id="notifyButton" onclick="startMonitoring()">
+        🔔 NOTIFY ME
+      </button>
+
+      <div id="status"></div>
+
+    </div>
+
+  </div>
+
+
+  <div id="popup">
+
+    <div class="popup-card">
+
+      <div class="popup-icon">✅</div>
+
+      <h2>Monitoring aktiviert</h2>
+
+      <p>
+        Deine Terminsuche wurde erfolgreich an
+        Save the Date übermittelt.
+      </p>
+
+      <button onclick="closePopup()">
+        OK
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <script>
+    const tg = window.Telegram?.WebApp;
+
+    if (tg) {
+      tg.ready();
+      tg.expand();
+    }
+
+
+    async function startMonitoring() {
+
+      const location =
+        document.getElementById("location").value.trim();
+
+      const service =
+        document.getElementById("service").value.trim();
+
+      const dateFrom =
+        document.getElementById("dateFrom").value;
+
+      const dateTo =
+        document.getElementById("dateTo").value;
+
+      const timeFrom =
+        document.getElementById("timeFrom").value || null;
+
+      const timeTo =
+        document.getElementById("timeTo").value || null;
+
+
+      if (!location || !service || !dateFrom || !dateTo) {
+
+        alert(
+          "Bitte Location, Service und Zeitraum ausfüllen."
+        );
+
+        return;
+      }
+
+
+      const telegramUserId =
+        tg?.initDataUnsafe?.user?.id || null;
+
+
+      const data = {
+
+        telegramChatId: telegramUserId,
+
+        telegramUserId: telegramUserId,
+
+        initData: tg?.initData || "",
+
+        location: location,
+
+        service: service,
+
+        dateFrom: dateFrom,
+
+        dateTo: dateTo,
+
+        timeFrom: timeFrom,
+
+        timeTo: timeTo
+
+      };
+
+
+      console.log(
+        "Monitoring request:",
+        data
+      );
+
+
+      const button =
+        document.getElementById("notifyButton");
+
+      const status =
+        document.getElementById("status");
+
+
+      button.disabled = true;
+
+      button.innerText =
+        "WIRD GESPEICHERT...";
+
+      status.innerText =
+        "Verbindung zum Server...";
+
+
+      try {
+
+        const response = await fetch(
+          "https://save-the-date-production.up.railway.app/api/watch",
+          {
+            method: "POST",
+
+            headers: {
+              "Content-Type": "application/json"
+            },
+
+            body: JSON.stringify(data)
+          }
+        );
+
+
+        const result =
+          await response.json();
+
+
+        console.log(
+          "Backend response:",
+          result
+        );
+
+
+        if (result.success) {
+
+          status.innerText =
+            "Überwachung erfolgreich erstellt.";
+
+          document.getElementById(
+            "popup"
+          ).style.display = "flex";
+
+        } else {
+
+          status.innerText = "";
+
+          alert(
+            "Fehler: " +
+            (result.error || "Unbekannter Fehler")
+          );
+
+        }
+
+
+      } catch (error) {
+
+        console.error(error);
+
+        status.innerText = "";
+
+        alert(
+          "Verbindung zum Server fehlgeschlagen."
+        );
+
+      } finally {
+
+        button.disabled = false;
+
+        button.innerText =
+          "🔔 NOTIFY ME";
+
+      }
+    }
+
+
+    function closePopup() {
+
+      document.getElementById(
+        "popup"
+      ).style.display = "none";
+
+    }
+  </script>
+
+</body>
+</html>
   }
 }
